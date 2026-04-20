@@ -5,6 +5,7 @@ import { SiteLayout } from "@/components/SiteLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Wind, Calendar, Building2, ClipboardList, ArrowRight, CheckCircle2, AlertTriangle, Clock } from "lucide-react";
+import condoHero from "@/assets/cores-de-outono.jpg";
 
 export const Route = createFileRoute("/")({
   component: () => (
@@ -37,25 +38,33 @@ function Index() {
   return (
     <div className="space-y-6">
       {/* Hero */}
-      <Card className="overflow-hidden border-0 shadow-[var(--shadow-card)]">
-        <div className="bg-[var(--gradient-autumn)] text-accent-foreground p-8 md:p-10">
-          <div className="flex flex-col md:flex-row md:items-center gap-6">
-            <div className="flex-1">
-              <span className="inline-block px-3 py-1 rounded-full bg-white/20 text-xs font-semibold uppercase tracking-wider">Atenção, morador</span>
-              <h2 className="mt-3 text-3xl md:text-4xl font-bold tracking-tight">Vistoria geral dos exaustores</h2>
-              <p className="mt-2 text-accent-foreground/90 max-w-xl">
+      <Card className="overflow-hidden border-0 shadow-[var(--shadow-card)] relative">
+        <div className="relative h-[280px] md:h-[380px]">
+          <img
+            src={condoHero}
+            alt="Fachada do Residencial Cores de Outono ao entardecer"
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="eager"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/80 to-primary/30" />
+          <div className="relative h-full flex items-center p-8 md:p-10">
+            <div className="max-w-xl text-primary-foreground">
+              <span className="inline-block px-3 py-1 rounded-full bg-accent/90 text-accent-foreground text-xs font-semibold uppercase tracking-wider">
+                Atenção, morador
+              </span>
+              <h2 className="mt-3 text-3xl md:text-4xl font-bold tracking-tight drop-shadow-sm">
+                Vistoria geral dos exaustores
+              </h2>
+              <p className="mt-2 text-primary-foreground/90">
                 Estamos realizando o levantamento do funcionamento dos exaustores de todas as 10 torres. Sua participação é essencial para identificarmos onde está a falha na linha em série.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
-                <Button asChild size="lg" variant="secondary" className="bg-white text-accent hover:bg-white/90 font-semibold">
+                <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold">
                   <Link to="/agendar">
                     Agendar minha vistoria <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
               </div>
-            </div>
-            <div className="hidden md:flex h-32 w-32 rounded-full bg-white/15 items-center justify-center shrink-0">
-              <Wind className="h-16 w-16" />
             </div>
           </div>
         </div>
