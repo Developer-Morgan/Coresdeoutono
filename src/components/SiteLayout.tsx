@@ -1,5 +1,6 @@
-import { Link, Outlet, useLocation } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Wind, ClipboardList, Home, Shield } from "lucide-react";
+import type { ReactNode } from "react";
 
 const tabs = [
   { to: "/", label: "Início", icon: Home },
@@ -7,7 +8,7 @@ const tabs = [
   { to: "/admin", label: "Administração", icon: Shield },
 ];
 
-export function SiteLayout() {
+export function SiteLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
 
   return (
@@ -49,7 +50,7 @@ export function SiteLayout() {
       </header>
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-8">
-        <Outlet />
+        {children}
       </main>
 
       <footer className="border-t border-border bg-card mt-12">
