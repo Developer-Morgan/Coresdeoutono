@@ -100,6 +100,46 @@ export function AdminSettings() {
       <Button onClick={save} disabled={loading} className="bg-accent hover:bg-accent/90 text-accent-foreground">
         {loading ? "Salvando..." : "Salvar configurações"}
       </Button>
+
+      <div className="pt-6 border-t border-destructive/30">
+        <h4 className="font-bold text-destructive flex items-center gap-2">
+          <Trash2 className="h-4 w-4" /> Zona de risco
+        </h4>
+        <p className="text-sm text-muted-foreground mt-1 mb-3">
+          Apaga <strong>todas as respostas dos moradores</strong> permanentemente. As configurações (data, horários, contato) são mantidas. Use ao iniciar uma nova rodada de inspeção.
+        </p>
+        <AlertDialog onOpenChange={(o) => !o && setConfirmText("")}>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive">
+              <Trash2 className="h-4 w-4 mr-2" /> Zerar todas as respostas
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Zerar todas as respostas?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Esta ação é <strong>irreversível</strong>. Todos os registros de inspeção dos moradores serão apagados. Para confirmar, digite <strong>ZERAR</strong> abaixo.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <Input
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              placeholder="Digite ZERAR"
+              autoFocus
+            />
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={resetAll}
+                disabled={confirmText !== "ZERAR" || resetting}
+                className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+              >
+                {resetting ? "Apagando..." : "Confirmar exclusão"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </Card>
   );
 }
