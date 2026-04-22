@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { LayoutDashboard, Settings, Building2, FileBarChart, LogOut } from "lucide-react";
+import { LayoutDashboard, Settings, Building2, FileBarChart, LogOut, Users } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   component: () => (
@@ -97,14 +97,16 @@ import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminSettings } from "@/components/admin/AdminSettings";
 import { AdminTowers } from "@/components/admin/AdminTowers";
 import { AdminReport } from "@/components/admin/AdminReport";
+import { AdminUsers } from "@/components/admin/AdminUsers";
 
 function AdminPanel() {
-  const [tab, setTab] = useState<"dashboard" | "settings" | "towers" | "report">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "settings" | "towers" | "report" | "users">("dashboard");
   const tabs = [
     { id: "dashboard" as const, label: "Painel", icon: LayoutDashboard },
     { id: "towers" as const, label: "Mapa das Torres", icon: Building2 },
     { id: "settings" as const, label: "Configurações", icon: Settings },
     { id: "report" as const, label: "Relatório", icon: FileBarChart },
+    { id: "users" as const, label: "Administradores", icon: Users },
   ];
 
   return (
@@ -136,6 +138,7 @@ function AdminPanel() {
       {tab === "settings" && <AdminSettings />}
       {tab === "towers" && <AdminTowers />}
       {tab === "report" && <AdminReport />}
+      {tab === "users" && <AdminUsers />}
     </div>
   );
 }
