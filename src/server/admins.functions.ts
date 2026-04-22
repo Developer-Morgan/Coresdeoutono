@@ -25,7 +25,7 @@ async function assertAdmin(supabase: any, userId: string) {
 }
 
 export const listAdmins = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([withAuthHeader, requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
     const { data: roles, error } = await supabaseAdmin
@@ -52,7 +52,7 @@ const createSchema = z.object({
 });
 
 export const createAdmin = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([withAuthHeader, requireSupabaseAuth])
   .inputValidator((d: { email: string; password: string }) => createSchema.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
@@ -85,7 +85,7 @@ export const createAdmin = createServerFn({ method: "POST" })
 const removeSchema = z.object({ userId: z.string().uuid() });
 
 export const removeAdmin = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([withAuthHeader, requireSupabaseAuth])
   .inputValidator((d: { userId: string }) => removeSchema.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
@@ -107,7 +107,7 @@ const pwdSchema = z.object({
 });
 
 export const resetAdminPassword = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([withAuthHeader, requireSupabaseAuth])
   .inputValidator((d: { userId: string; password: string }) => pwdSchema.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
