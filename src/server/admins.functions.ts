@@ -1,7 +1,18 @@
-import { createServerFn } from "@tanstack/react-start";
+import { createMiddleware, createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { supabase } from "@/integrations/supabase/client";
+
+// Client middleware: injeta o token de sessão no header Authorization para que
+// o requireSupabaseAuth (server) consiga validar quem está chamando.
+const withAuthHeader = createMiddleware({ type: "function" }).client(async ({ next }) => {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  return next({
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+});
 
 async function assertAdmin(supabase: any, userId: string) {
   const { data, error } = await supabase
