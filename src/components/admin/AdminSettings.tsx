@@ -20,6 +20,20 @@ export function AdminSettings() {
   const [slots, setSlots] = useState<string[]>([]);
   const [newSlot, setNewSlot] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  const [confirmText, setConfirmText] = useState("");
+
+  async function resetAll() {
+    setResetting(true);
+    const { error, count } = await supabase
+      .from("inspections")
+      .delete({ count: "exact" })
+      .gte("tower", 0);
+    setResetting(false);
+    setConfirmText("");
+    if (error) toast.error(error.message);
+    else toast.success(`${count ?? 0} respostas removidas. Sistema zerado.`);
+  }
 
   useEffect(() => {
     supabase.from("settings").select("*").eq("id", 1).single().then(({ data }) => {
