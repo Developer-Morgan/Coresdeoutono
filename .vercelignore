@@ -1,0 +1,6 @@
+wrangler.jsonc
+.dev.vars
+dist
+.output
+.vinxi
+node_modules
