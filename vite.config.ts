@@ -11,17 +11,20 @@ import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 
-// When building for Vercel (BUILD_TARGET=vercel), bypass the Lovable preset
-// (which forces the Cloudflare target) and configure TanStack Start with
-// target: "vercel" so the build emits .vercel/output for Vercel to serve.
-const isVercelBuild = process.env.BUILD_TARGET === "vercel";
+// When building for Vercel (BUILD_TARGET=vercel, set by `vercel-build` script
+// or automatically when VERCEL=1 is present), bypass the Lovable preset
+// (which forces the Cloudflare adapter) and run TanStack Start standalone.
+// Nitro auto-detects the Vercel preset via the VERCEL=1 env var that Vercel
+// sets in its build environment, producing .vercel/output for deploy.
+const isVercelBuild =
+  process.env.BUILD_TARGET === "vercel" || process.env.VERCEL === "1";
 
 export default isVercelBuild
   ? defineConfig({
       plugins: [
         tsConfigPaths(),
         tailwindcss(),
-        tanstackStart({ target: "vercel" }),
+        tanstackStart(),
         viteReact(),
       ],
     })
