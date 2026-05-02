@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Wind, Calendar, Building2, ClipboardList, ArrowRight, CheckCircle2, AlertTriangle, Clock } from "lucide-react";
+import { Wind, Calendar, Building2, ClipboardList, ArrowRight, CheckCircle2, AlertTriangle, Clock, Radio } from "lucide-react";
 import condoHero from "@/assets/cores-de-outono.jpg";
 
 export const Route = createFileRoute("/")({
@@ -18,17 +18,44 @@ export const Route = createFileRoute("/")({
 function Index() {
   const [settings, setSettings] = useState<{ visit_date: string | null; contact_phone: string | null; notes: string | null } | null>(null);
   const [stats, setStats] = useState({ total: 0, working: 0, not_working: 0 });
+  const [live, setLive] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+
+  const refreshStats = async () => {
+    const { data } = await supabase.from("inspections").select("status");
+    if (!data) return;
+    setStats({
+      total: data.length,
+      working: data.filter((d) => d.status === "working").length,
+      not_working: data.filter((d) => d.status === "not_working").length,
+    });
+    setLastUpdate(new Date());
+  };
+
+  const refreshSettings = async () => {
+    const { data } = await supabase.from("settings").select("visit_date, contact_phone, notes").eq("id", 1).single();
+    setSettings(data);
+  };
 
   useEffect(() => {
-    supabase.from("settings").select("visit_date, contact_phone, notes").eq("id", 1).single().then(({ data }) => setSettings(data));
-    supabase.from("inspections").select("status").then(({ data }) => {
-      if (!data) return;
-      setStats({
-        total: data.length,
-        working: data.filter((d) => d.status === "working").length,
-        not_working: data.filter((d) => d.status === "not_working").length,
+    refreshSettings();
+    refreshStats();
+
+    const channel = supabase
+      .channel("home-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "inspections" }, () => {
+        refreshStats();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "settings" }, () => {
+        refreshSettings();
+      })
+      .subscribe((status) => {
+        setLive(status === "SUBSCRIBED");
       });
-    });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const visitDate = settings?.visit_date
@@ -88,10 +115,22 @@ function Index() {
       </Card>
 
       {/* Status summary */}
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h3 className="text-lg font-semibold text-foreground">Status em tempo real</h3>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span className="relative flex h-2 w-2">
+            {live && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75" />}
+            <span className={`relative inline-flex rounded-full h-2 w-2 ${live ? "bg-success" : "bg-muted-foreground"}`} />
+          </span>
+          <Radio className="h-3.5 w-3.5" />
+          {live ? "Ao vivo" : "Conectando..."}
+          {lastUpdate && <span className="hidden sm:inline">· atualizado {lastUpdate.toLocaleTimeString("pt-BR")}</span>}
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard icon={CheckCircle2} label="Funcionando" value={stats.working} tone="success" />
         <StatCard icon={AlertTriangle} label="Não funcionando" value={stats.not_working} tone="destructive" />
-        <StatCard icon={Clock} label="Aguardando resposta" value={640 - stats.total} tone="muted" />
+        <StatCard icon={Clock} label="Aguardando resposta" value={Math.max(0, 640 - stats.total)} tone="muted" />
       </div>
 
       {settings?.notes && (
