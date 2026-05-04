@@ -25,13 +25,20 @@ export default isVercelBuild
   ? defineConfig({
       plugins: [tsConfigPaths(), tailwindcss(), viteReact()],
       resolve: {
-        alias: {
-          "@": r("src"),
+        alias: [
+          // Order matters: more specific aliases must come BEFORE generic "@".
           // No SSR/server runtime in the SPA build — replace server-only
           // modules with shims that compile but don't ship secrets.
-          "@tanstack/react-start": r("src/spa/react-start-shim.ts"),
-          "@/server/admins.functions": r("src/spa/admins.functions.stub.ts"),
-        },
+          {
+            find: /^@\/server\/admins\.functions$/,
+            replacement: r("src/spa/admins.functions.stub.ts"),
+          },
+          {
+            find: /^@tanstack\/react-start(\/.*)?$/,
+            replacement: r("src/spa/react-start-shim.ts"),
+          },
+          { find: "@", replacement: r("src") },
+        ],
       },
       build: {
         outDir: "dist",
