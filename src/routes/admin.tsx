@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Card } from "@/components/ui/card";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { LayoutDashboard, Settings, Building2, FileBarChart, LogOut, Users } from "lucide-react";
+import { LayoutDashboard, Settings, Building2, FileBarChart, LogOut, Users, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   component: () => (
