@@ -118,18 +118,18 @@ function Agendar() {
           <h2 className="text-2xl font-bold text-foreground">Torre {tower} — selecione seu apartamento</h2>
           <p className="text-muted-foreground mt-1">Andares de 1 a 8, unidades de 1 a 8.</p>
         </div>
-        <Card className="p-6 overflow-x-auto">
+        <Card className="p-3 sm:p-6 overflow-x-auto">
           <div className="inline-block min-w-full">
             {[...FLOORS].reverse().map((floor) => (
-              <div key={floor} className="flex items-center gap-2 mb-2">
-                <span className="w-12 text-xs uppercase tracking-wider text-muted-foreground font-semibold">{floor}º and.</span>
+              <div key={floor} className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                <span className="w-10 sm:w-12 text-[10px] sm:text-xs uppercase tracking-wider text-muted-foreground font-semibold shrink-0">{floor}º and.</span>
                 {COLUMNS.map((col) => {
                   const n = aptNumber(floor, col);
                   return (
                     <button
                       key={n}
                       onClick={() => setApt(n)}
-                      className="h-12 w-14 rounded-md border border-border bg-card hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all text-sm font-semibold text-foreground"
+                      className="h-12 w-12 sm:h-12 sm:w-14 rounded-md border border-border bg-card hover:border-accent hover:bg-accent hover:text-accent-foreground active:bg-accent active:text-accent-foreground transition-all text-sm font-semibold text-foreground shrink-0"
                     >
                       {n}
                     </button>

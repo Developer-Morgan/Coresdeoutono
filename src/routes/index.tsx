@@ -66,27 +66,27 @@ function Index() {
     <div className="space-y-6">
       {/* Hero */}
       <Card className="overflow-hidden border-0 shadow-[var(--shadow-card)] relative">
-        <div className="relative h-[280px] md:h-[380px]">
+        <div className="relative h-[260px] sm:h-[320px] md:h-[380px]">
           <img
             src={condoHero}
             alt="Fachada do Residencial Cores de Outono ao entardecer"
             className="absolute inset-0 w-full h-full object-cover"
             loading="eager"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/80 to-primary/30" />
-          <div className="relative h-full flex items-center p-8 md:p-10">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/85 sm:via-primary/80 to-primary/40 sm:to-primary/30" />
+          <div className="relative h-full flex items-center p-5 sm:p-8 md:p-10">
             <div className="max-w-xl text-primary-foreground">
-              <span className="inline-block px-3 py-1 rounded-full bg-accent/90 text-accent-foreground text-xs font-semibold uppercase tracking-wider">
+              <span className="inline-block px-2.5 py-1 rounded-full bg-accent/90 text-accent-foreground text-[10px] sm:text-xs font-semibold uppercase tracking-wider">
                 Atenção, morador
               </span>
-              <h2 className="mt-3 text-3xl md:text-4xl font-bold tracking-tight drop-shadow-sm">
+              <h2 className="mt-3 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight drop-shadow-sm leading-tight">
                 Vistoria geral dos exaustores
               </h2>
-              <p className="mt-2 text-primary-foreground/90">
+              <p className="mt-2 text-sm sm:text-base text-primary-foreground/90">
                 Estamos realizando o levantamento do funcionamento dos exaustores de todas as 10 torres. Sua participação é essencial para identificarmos onde está a falha na linha em série.
               </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold">
+              <div className="mt-4 sm:mt-5 flex flex-wrap gap-3">
+                <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold w-full sm:w-auto">
                   <Link to="/agendar">
                     Agendar minha vistoria <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
