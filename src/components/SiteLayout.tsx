@@ -14,7 +14,10 @@ export function SiteLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Top bar */}
-      <header className="bg-[var(--gradient-header)] text-primary-foreground sticky top-0 z-30 shadow-[var(--shadow-soft)]">
+      <header
+        className="text-primary-foreground sticky top-0 z-30 shadow-[var(--shadow-soft)]"
+        style={{ backgroundImage: "var(--gradient-header)", backgroundColor: "var(--primary)" }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-5 flex items-center gap-3 sm:gap-4">
           <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-md bg-accent/90 flex items-center justify-center shadow-[var(--shadow-soft)] shrink-0">
             <Wind className="h-5 w-5 sm:h-6 sm:w-6 text-accent-foreground" />
