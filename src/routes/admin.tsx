@@ -118,14 +118,14 @@ function AdminPanel() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-2xl font-bold text-foreground">Painel administrativo</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground">Painel administrativo</h2>
         <Button variant="outline" size="sm" onClick={() => supabase.auth.signOut()}>
           <LogOut className="h-4 w-4 mr-2" /> Sair
         </Button>
       </div>
-      <div className="flex gap-1 border-b border-border overflow-x-auto">
+      <div className="-mx-4 sm:mx-0 px-4 sm:px-0 flex gap-2 sm:gap-1 sm:border-b sm:border-border overflow-x-auto scrollbar-none snap-x snap-mandatory">
         {tabs.map((t) => {
           const Icon = t.icon;
           const active = tab === t.id;
@@ -133,8 +133,10 @@ function AdminPanel() {
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                active ? "border-accent text-accent" : "border-transparent text-muted-foreground hover:text-foreground"
+              className={`snap-start flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-sm font-semibold sm:font-medium rounded-full sm:rounded-none sm:border-b-2 transition-colors whitespace-nowrap shrink-0 ${
+                active
+                  ? "bg-accent text-accent-foreground sm:bg-transparent sm:text-accent sm:border-accent shadow-sm sm:shadow-none"
+                  : "bg-secondary text-secondary-foreground sm:bg-transparent sm:text-muted-foreground sm:border-transparent sm:hover:text-foreground"
               }`}
             >
               <Icon className="h-4 w-4" /> {t.label}
