@@ -93,11 +93,19 @@ function NotAdmin({ email }: { email: string }) {
   );
 }
 
-import { AdminDashboard } from "@/components/admin/AdminDashboard";
-import { AdminSettings } from "@/components/admin/AdminSettings";
-import { AdminTowers } from "@/components/admin/AdminTowers";
-import { AdminReport } from "@/components/admin/AdminReport";
-import { AdminUsers } from "@/components/admin/AdminUsers";
+const AdminDashboard = lazy(() => import("@/components/admin/AdminDashboard").then((m) => ({ default: m.AdminDashboard })));
+const AdminSettings = lazy(() => import("@/components/admin/AdminSettings").then((m) => ({ default: m.AdminSettings })));
+const AdminTowers = lazy(() => import("@/components/admin/AdminTowers").then((m) => ({ default: m.AdminTowers })));
+const AdminReport = lazy(() => import("@/components/admin/AdminReport").then((m) => ({ default: m.AdminReport })));
+const AdminUsers = lazy(() => import("@/components/admin/AdminUsers").then((m) => ({ default: m.AdminUsers })));
+
+function PanelFallback() {
+  return (
+    <div className="flex items-center justify-center py-16 text-muted-foreground">
+      <Loader2 className="h-5 w-5 animate-spin mr-2" /> Carregando módulo...
+    </div>
+  );
+}
 
 function AdminPanel() {
   const [tab, setTab] = useState<"dashboard" | "settings" | "towers" | "report" | "users">("dashboard");
@@ -134,11 +142,14 @@ function AdminPanel() {
           );
         })}
       </div>
-      {tab === "dashboard" && <AdminDashboard />}
-      {tab === "settings" && <AdminSettings />}
-      {tab === "towers" && <AdminTowers />}
-      {tab === "report" && <AdminReport />}
-      {tab === "users" && <AdminUsers />}
+      <Suspense fallback={<PanelFallback />}>
+        {tab === "dashboard" && <AdminDashboard />}
+        {tab === "settings" && <AdminSettings />}
+        {tab === "towers" && <AdminTowers />}
+        {tab === "report" && <AdminReport />}
+        {tab === "users" && <AdminUsers />}
+      </Suspense>
     </div>
   );
 }
+
