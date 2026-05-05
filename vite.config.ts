@@ -43,6 +43,13 @@ export default isVercelBuild
       build: {
         outDir: "dist",
         emptyOutDir: true,
+        chunkSizeWarningLimit: 1500,
       },
     })
-  : defineLovableConfig();
+  : defineLovableConfig({
+      vite: {
+        build: {
+          chunkSizeWarningLimit: 1500,
+        },
+      },
+    });
