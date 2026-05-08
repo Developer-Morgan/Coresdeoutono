@@ -25,8 +25,11 @@ const schema = z.object({
   resident_name: z.string().trim().min(3, "Informe seu nome completo").max(120),
   phone: z.string().trim().min(8, "Telefone inválido").max(20),
   status: z.enum(["working", "not_working"]),
-  time_slot: z.string().min(1, "Escolha um horário"),
+  time_slot: z.string(),
   notes: z.string().max(500).optional(),
+}).refine((d) => d.status === "working" || d.time_slot.length > 0, {
+  message: "Escolha um horário para a visita",
+  path: ["time_slot"],
 });
 
 function Agendar() {
@@ -71,10 +74,14 @@ function Agendar() {
         <div className="h-16 w-16 rounded-full bg-success/10 text-success mx-auto flex items-center justify-center">
           <CheckCircle2 className="h-9 w-9" />
         </div>
-        <h2 className="text-2xl font-bold mt-4 text-foreground">Agendamento confirmado!</h2>
+        <h2 className="text-2xl font-bold mt-4 text-foreground">{form.status === "working" ? "Resposta registrada!" : "Agendamento confirmado!"}</h2>
         <p className="text-muted-foreground mt-2">
           Recebemos sua resposta para a <strong className="text-foreground">Torre {tower} – Apto {apt}</strong>.
-          {visitDate && <> O técnico passará na <strong className="text-foreground capitalize">{visitDate}</strong> no horário <strong className="text-foreground">{form.time_slot}</strong>.</>}
+          {form.status === "working" ? (
+            <> Como o exaustor está <strong className="text-success">funcionando</strong>, não é necessária visita técnica.</>
+          ) : (
+            visitDate && <> O técnico passará na <strong className="text-foreground capitalize">{visitDate}</strong> no horário <strong className="text-foreground">{form.time_slot}</strong>.</>
+          )}
         </p>
         <Button className="mt-6" onClick={() => { setDone(false); setTower(null); setApt(null); setForm({ resident_name: "", phone: "", status: "", time_slot: "", notes: "" }); }}>
           Cadastrar outra unidade
@@ -184,22 +191,28 @@ function Agendar() {
           </RadioGroup>
         </div>
 
-        <div className="space-y-2">
-          <Label>Horário disponível para o técnico</Label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {(settings?.time_slots ?? []).map((slot) => (
-              <button
-                key={slot}
-                type="button"
-                onClick={() => setForm({ ...form, time_slot: slot })}
-                className={`px-3 py-2 rounded-md border-2 text-sm font-medium transition-all ${form.time_slot === slot ? "border-accent bg-accent text-accent-foreground" : "border-border bg-card hover:border-accent/50"}`}
-              >
-                {slot}
-              </button>
-            ))}
-            {!settings?.time_slots?.length && <p className="text-sm text-muted-foreground col-span-full">Aguardando administração definir horários.</p>}
+        {form.status === "not_working" ? (
+          <div className="space-y-2">
+            <Label>Horário disponível para o técnico</Label>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {(settings?.time_slots ?? []).map((slot) => (
+                <button
+                  key={slot}
+                  type="button"
+                  onClick={() => setForm({ ...form, time_slot: slot })}
+                  className={`px-3 py-2 rounded-md border-2 text-sm font-medium transition-all ${form.time_slot === slot ? "border-accent bg-accent text-accent-foreground" : "border-border bg-card hover:border-accent/50"}`}
+                >
+                  {slot}
+                </button>
+              ))}
+              {!settings?.time_slots?.length && <p className="text-sm text-muted-foreground col-span-full">Aguardando administração definir horários.</p>}
+            </div>
           </div>
-        </div>
+        ) : form.status === "working" ? (
+          <div className="rounded-md border-2 border-success/40 bg-success/5 p-4 text-sm text-foreground">
+            Como o exaustor está <strong className="text-success">funcionando</strong>, não é necessária a presença do técnico. Basta confirmar abaixo.
+          </div>
+        ) : null}
 
         <div className="space-y-2">
           <Label htmlFor="notes">Observações (opcional)</Label>
