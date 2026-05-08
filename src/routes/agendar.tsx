@@ -74,10 +74,14 @@ function Agendar() {
         <div className="h-16 w-16 rounded-full bg-success/10 text-success mx-auto flex items-center justify-center">
           <CheckCircle2 className="h-9 w-9" />
         </div>
-        <h2 className="text-2xl font-bold mt-4 text-foreground">Agendamento confirmado!</h2>
+        <h2 className="text-2xl font-bold mt-4 text-foreground">{form.status === "working" ? "Resposta registrada!" : "Agendamento confirmado!"}</h2>
         <p className="text-muted-foreground mt-2">
           Recebemos sua resposta para a <strong className="text-foreground">Torre {tower} – Apto {apt}</strong>.
-          {visitDate && <> O técnico passará na <strong className="text-foreground capitalize">{visitDate}</strong> no horário <strong className="text-foreground">{form.time_slot}</strong>.</>}
+          {form.status === "working" ? (
+            <> Como o exaustor está <strong className="text-success">funcionando</strong>, não é necessária visita técnica.</>
+          ) : (
+            visitDate && <> O técnico passará na <strong className="text-foreground capitalize">{visitDate}</strong> no horário <strong className="text-foreground">{form.time_slot}</strong>.</>
+          )}
         </p>
         <Button className="mt-6" onClick={() => { setDone(false); setTower(null); setApt(null); setForm({ resident_name: "", phone: "", status: "", time_slot: "", notes: "" }); }}>
           Cadastrar outra unidade
