@@ -25,8 +25,11 @@ const schema = z.object({
   resident_name: z.string().trim().min(3, "Informe seu nome completo").max(120),
   phone: z.string().trim().min(8, "Telefone inválido").max(20),
   status: z.enum(["working", "not_working"]),
-  time_slot: z.string().min(1, "Escolha um horário"),
+  time_slot: z.string(),
   notes: z.string().max(500).optional(),
+}).refine((d) => d.status === "working" || d.time_slot.length > 0, {
+  message: "Escolha um horário para a visita",
+  path: ["time_slot"],
 });
 
 function Agendar() {
