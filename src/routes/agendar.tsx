@@ -45,6 +45,8 @@ function Agendar() {
     ? new Date(settings.visit_date + "T00:00:00").toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })
     : null;
 
+  const schedulingOpen = settings?.scheduling_open ?? false;
+
   async function submit() {
     if (!tower || !apt) return;
     const parsed = schema.safeParse(form);
@@ -52,9 +54,19 @@ function Agendar() {
       toast.error(parsed.error.issues[0].message);
       return;
     }
+    if (schedulingOpen && parsed.data.status === "not_working" && !parsed.data.time_slot) {
+      toast.error("Escolha um horário para a visita");
+      return;
+    }
     setSubmitting(true);
     const { error } = await supabase.from("inspections").upsert(
-      { tower, apartment: apt, ...parsed.data, notes: parsed.data.notes || null },
+      {
+        tower,
+        apartment: apt,
+        ...parsed.data,
+        time_slot: schedulingOpen ? parsed.data.time_slot : "",
+        notes: parsed.data.notes || null,
+      },
       { onConflict: "tower,apartment" }
     );
     setSubmitting(false);
@@ -189,22 +201,28 @@ function Agendar() {
         </div>
 
         {form.status === "not_working" ? (
-          <div className="space-y-2">
-            <Label>Horário disponível para o técnico</Label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {(settings?.time_slots ?? []).map((slot) => (
-                <button
-                  key={slot}
-                  type="button"
-                  onClick={() => setForm({ ...form, time_slot: slot })}
-                  className={`px-3 py-2 rounded-md border-2 text-sm font-medium transition-all ${form.time_slot === slot ? "border-accent bg-accent text-accent-foreground" : "border-border bg-card hover:border-accent/50"}`}
-                >
-                  {slot}
-                </button>
-              ))}
-              {!settings?.time_slots?.length && <p className="text-sm text-muted-foreground col-span-full">Aguardando administração definir horários.</p>}
+          schedulingOpen ? (
+            <div className="space-y-2">
+              <Label>Horário disponível para o técnico</Label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {(settings?.time_slots ?? []).map((slot) => (
+                  <button
+                    key={slot}
+                    type="button"
+                    onClick={() => setForm({ ...form, time_slot: slot })}
+                    className={`px-3 py-2 rounded-md border-2 text-sm font-medium transition-all ${form.time_slot === slot ? "border-accent bg-accent text-accent-foreground" : "border-border bg-card hover:border-accent/50"}`}
+                  >
+                    {slot}
+                  </button>
+                ))}
+                {!settings?.time_slots?.length && <p className="text-sm text-muted-foreground col-span-full">Aguardando administração definir horários.</p>}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="rounded-md border-2 border-accent/40 bg-accent/5 p-4 text-sm text-foreground">
+              No momento estamos apenas <strong>levantando quais unidades estão com falha</strong>. Sua resposta será registrada e a administração informará quando o agendamento de visitas for liberado.
+            </div>
+          )
         ) : form.status === "working" ? (
           <div className="rounded-md border-2 border-success/40 bg-success/5 p-4 text-sm text-foreground">
             Como o exaustor está <strong className="text-success">funcionando</strong>, não é necessária a presença do técnico. Basta confirmar abaixo.
