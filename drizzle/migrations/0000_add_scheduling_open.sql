@@ -1,0 +1,1 @@
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS scheduling_open boolean NOT NULL DEFAULT true;

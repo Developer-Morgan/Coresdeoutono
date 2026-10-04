@@ -55,6 +55,7 @@ export type Database = {
           contact_phone: string | null
           id: number
           notes: string | null
+          scheduling_open: boolean
           time_slots: string[]
           updated_at: string
           visit_date: string | null
@@ -63,6 +64,7 @@ export type Database = {
           contact_phone?: string | null
           id?: number
           notes?: string | null
+          scheduling_open?: boolean
           time_slots?: string[]
           updated_at?: string
           visit_date?: string | null
@@ -71,6 +73,7 @@ export type Database = {
           contact_phone?: string | null
           id?: number
           notes?: string | null
+          scheduling_open?: boolean
           time_slots?: string[]
           updated_at?: string
           visit_date?: string | null
