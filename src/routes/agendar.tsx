@@ -83,11 +83,13 @@ function Agendar() {
         <div className="h-16 w-16 rounded-full bg-success/10 text-success mx-auto flex items-center justify-center">
           <CheckCircle2 className="h-9 w-9" />
         </div>
-        <h2 className="text-2xl font-bold mt-4 text-foreground">{form.status === "working" ? "Resposta registrada!" : "Agendamento confirmado!"}</h2>
+        <h2 className="text-2xl font-bold mt-4 text-foreground">{form.status === "working" || !schedulingOpen ? "Resposta registrada!" : "Agendamento confirmado!"}</h2>
         <p className="text-muted-foreground mt-2">
           Recebemos sua resposta para a <strong className="text-foreground">Torre {tower} – Apto {apt}</strong>.
           {form.status === "working" ? (
             <> Como o exaustor está <strong className="text-success">funcionando</strong>, não é necessária visita técnica.</>
+          ) : !schedulingOpen ? (
+            <> A falha foi registrada para análise. A administração avisará quando as visitas forem liberadas.</>
           ) : (
             visitDate && <> O técnico passará na <strong className="text-foreground capitalize">{visitDate}</strong> no horário <strong className="text-foreground">{form.time_slot}</strong>.</>
           )}
@@ -235,7 +237,7 @@ function Agendar() {
         </div>
 
         <Button onClick={submit} disabled={submitting} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" size="lg">
-          {submitting ? "Enviando..." : "Confirmar agendamento"}
+          {submitting ? "Enviando..." : schedulingOpen && form.status === "not_working" ? "Confirmar agendamento" : "Enviar resposta"}
         </Button>
       </Card>
     </div>
