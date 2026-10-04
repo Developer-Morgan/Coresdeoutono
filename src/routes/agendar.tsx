@@ -27,26 +27,25 @@ const schema = z.object({
   status: z.enum(["working", "not_working"]),
   time_slot: z.string(),
   notes: z.string().max(500).optional(),
-}).refine((d) => d.status === "working" || d.time_slot.length > 0, {
-  message: "Escolha um horário para a visita",
-  path: ["time_slot"],
 });
 
 function Agendar() {
   const [tower, setTower] = useState<number | null>(null);
   const [apt, setApt] = useState<number | null>(null);
-  const [settings, setSettings] = useState<{ visit_date: string | null; time_slots: string[] } | null>(null);
+  const [settings, setSettings] = useState<{ visit_date: string | null; time_slots: string[]; scheduling_open: boolean } | null>(null);
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ resident_name: "", phone: "", status: "" as "working" | "not_working" | "", time_slot: "", notes: "" });
 
   useEffect(() => {
-    supabase.from("settings").select("visit_date, time_slots").eq("id", 1).single().then(({ data }) => setSettings(data));
+    supabase.from("settings").select("visit_date, time_slots, scheduling_open").eq("id", 1).single().then(({ data }) => setSettings(data));
   }, []);
 
   const visitDate = settings?.visit_date
     ? new Date(settings.visit_date + "T00:00:00").toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })
     : null;
+
+  const schedulingOpen = settings?.scheduling_open ?? false;
 
   async function submit() {
     if (!tower || !apt) return;
@@ -55,9 +54,19 @@ function Agendar() {
       toast.error(parsed.error.issues[0].message);
       return;
     }
+    if (schedulingOpen && parsed.data.status === "not_working" && !parsed.data.time_slot) {
+      toast.error("Escolha um horário para a visita");
+      return;
+    }
     setSubmitting(true);
     const { error } = await supabase.from("inspections").upsert(
-      { tower, apartment: apt, ...parsed.data, notes: parsed.data.notes || null },
+      {
+        tower,
+        apartment: apt,
+        ...parsed.data,
+        time_slot: schedulingOpen ? parsed.data.time_slot : "",
+        notes: parsed.data.notes || null,
+      },
       { onConflict: "tower,apartment" }
     );
     setSubmitting(false);
@@ -74,11 +83,13 @@ function Agendar() {
         <div className="h-16 w-16 rounded-full bg-success/10 text-success mx-auto flex items-center justify-center">
           <CheckCircle2 className="h-9 w-9" />
         </div>
-        <h2 className="text-2xl font-bold mt-4 text-foreground">{form.status === "working" ? "Resposta registrada!" : "Agendamento confirmado!"}</h2>
+        <h2 className="text-2xl font-bold mt-4 text-foreground">{form.status === "working" || !schedulingOpen ? "Resposta registrada!" : "Agendamento confirmado!"}</h2>
         <p className="text-muted-foreground mt-2">
           Recebemos sua resposta para a <strong className="text-foreground">Torre {tower} – Apto {apt}</strong>.
           {form.status === "working" ? (
             <> Como o exaustor está <strong className="text-success">funcionando</strong>, não é necessária visita técnica.</>
+          ) : !schedulingOpen ? (
+            <> A falha foi registrada para análise. A administração avisará quando as visitas forem liberadas.</>
           ) : (
             visitDate && <> O técnico passará na <strong className="text-foreground capitalize">{visitDate}</strong> no horário <strong className="text-foreground">{form.time_slot}</strong>.</>
           )}
@@ -159,7 +170,7 @@ function Agendar() {
       <div>
         <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-semibold uppercase tracking-wider">Torre {tower} · Apto {apt}</span>
         <h2 className="text-2xl font-bold text-foreground mt-2">Preencha seus dados</h2>
-        {visitDate && <p className="text-muted-foreground mt-1">Visita técnica: <strong className="text-foreground capitalize">{visitDate}</strong></p>}
+        {schedulingOpen && visitDate && <p className="text-muted-foreground mt-1">Visita técnica: <strong className="text-foreground capitalize">{visitDate}</strong></p>}
       </div>
       <Card className="p-6 space-y-5">
         <div className="space-y-2">
@@ -192,22 +203,28 @@ function Agendar() {
         </div>
 
         {form.status === "not_working" ? (
-          <div className="space-y-2">
-            <Label>Horário disponível para o técnico</Label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {(settings?.time_slots ?? []).map((slot) => (
-                <button
-                  key={slot}
-                  type="button"
-                  onClick={() => setForm({ ...form, time_slot: slot })}
-                  className={`px-3 py-2 rounded-md border-2 text-sm font-medium transition-all ${form.time_slot === slot ? "border-accent bg-accent text-accent-foreground" : "border-border bg-card hover:border-accent/50"}`}
-                >
-                  {slot}
-                </button>
-              ))}
-              {!settings?.time_slots?.length && <p className="text-sm text-muted-foreground col-span-full">Aguardando administração definir horários.</p>}
+          schedulingOpen ? (
+            <div className="space-y-2">
+              <Label>Horário disponível para o técnico</Label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {(settings?.time_slots ?? []).map((slot) => (
+                  <button
+                    key={slot}
+                    type="button"
+                    onClick={() => setForm({ ...form, time_slot: slot })}
+                    className={`px-3 py-2 rounded-md border-2 text-sm font-medium transition-all ${form.time_slot === slot ? "border-accent bg-accent text-accent-foreground" : "border-border bg-card hover:border-accent/50"}`}
+                  >
+                    {slot}
+                  </button>
+                ))}
+                {!settings?.time_slots?.length && <p className="text-sm text-muted-foreground col-span-full">Aguardando administração definir horários.</p>}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="rounded-md border-2 border-accent/40 bg-accent/5 p-4 text-sm text-foreground">
+              No momento estamos apenas <strong>levantando quais unidades estão com falha</strong>. Sua resposta será registrada e a administração informará quando o agendamento de visitas for liberado.
+            </div>
+          )
         ) : form.status === "working" ? (
           <div className="rounded-md border-2 border-success/40 bg-success/5 p-4 text-sm text-foreground">
             Como o exaustor está <strong className="text-success">funcionando</strong>, não é necessária a presença do técnico. Basta confirmar abaixo.
@@ -220,7 +237,7 @@ function Agendar() {
         </div>
 
         <Button onClick={submit} disabled={submitting} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" size="lg">
-          {submitting ? "Enviando..." : "Confirmar agendamento"}
+          {submitting ? "Enviando..." : schedulingOpen && form.status === "not_working" ? "Confirmar agendamento" : "Enviar resposta"}
         </Button>
       </Card>
     </div>
