@@ -170,7 +170,7 @@ function Agendar() {
       <div>
         <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-semibold uppercase tracking-wider">Torre {tower} · Apto {apt}</span>
         <h2 className="text-2xl font-bold text-foreground mt-2">Preencha seus dados</h2>
-        {visitDate && <p className="text-muted-foreground mt-1">Visita técnica: <strong className="text-foreground capitalize">{visitDate}</strong></p>}
+        {schedulingOpen && visitDate && <p className="text-muted-foreground mt-1">Visita técnica: <strong className="text-foreground capitalize">{visitDate}</strong></p>}
       </div>
       <Card className="p-6 space-y-5">
         <div className="space-y-2">
