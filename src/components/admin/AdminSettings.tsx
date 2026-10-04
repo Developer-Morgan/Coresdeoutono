@@ -19,6 +19,7 @@ export function AdminSettings() {
   const [notes, setNotes] = useState("");
   const [slots, setSlots] = useState<string[]>([]);
   const [newSlot, setNewSlot] = useState("");
+  const [schedulingOpen, setSchedulingOpen] = useState(true);
   const [loading, setLoading] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -42,6 +43,7 @@ export function AdminSettings() {
       setPhone(data.contact_phone ?? "");
       setNotes(data.notes ?? "");
       setSlots(data.time_slots ?? []);
+      setSchedulingOpen(data.scheduling_open ?? true);
     });
   }, []);
 
@@ -52,6 +54,7 @@ export function AdminSettings() {
       contact_phone: phone || null,
       notes: notes || null,
       time_slots: slots,
+      scheduling_open: schedulingOpen,
       updated_at: new Date().toISOString(),
     }).eq("id", 1);
     setLoading(false);
@@ -61,6 +64,25 @@ export function AdminSettings() {
 
   return (
     <Card className="p-6 space-y-6 max-w-3xl">
+      <div className={`rounded-lg border-2 p-4 flex items-center justify-between gap-4 ${schedulingOpen ? "border-success/40 bg-success/5" : "border-destructive/40 bg-destructive/5"}`}>
+        <div>
+          <p className="font-semibold text-foreground">Agendamento de visitas</p>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {schedulingOpen
+              ? "Liberado: moradores com exaustor com falha podem escolher horário para o técnico."
+              : "Bloqueado: moradores apenas informam o status (modo de análise). Nenhum horário é exibido."}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setSchedulingOpen(!schedulingOpen)}
+          className={`relative h-8 w-14 rounded-full transition-colors shrink-0 ${schedulingOpen ? "bg-success" : "bg-muted-foreground/40"}`}
+          aria-label="Alternar agendamento"
+        >
+          <span className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow transition-all ${schedulingOpen ? "left-7" : "left-1"}`} />
+        </button>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Data da visita técnica</Label>
