@@ -27,21 +27,18 @@ const schema = z.object({
   status: z.enum(["working", "not_working"]),
   time_slot: z.string(),
   notes: z.string().max(500).optional(),
-}).refine((d) => d.status === "working" || d.time_slot.length > 0, {
-  message: "Escolha um horário para a visita",
-  path: ["time_slot"],
 });
 
 function Agendar() {
   const [tower, setTower] = useState<number | null>(null);
   const [apt, setApt] = useState<number | null>(null);
-  const [settings, setSettings] = useState<{ visit_date: string | null; time_slots: string[] } | null>(null);
+  const [settings, setSettings] = useState<{ visit_date: string | null; time_slots: string[]; scheduling_open: boolean } | null>(null);
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ resident_name: "", phone: "", status: "" as "working" | "not_working" | "", time_slot: "", notes: "" });
 
   useEffect(() => {
-    supabase.from("settings").select("visit_date, time_slots").eq("id", 1).single().then(({ data }) => setSettings(data));
+    supabase.from("settings").select("visit_date, time_slots, scheduling_open").eq("id", 1).single().then(({ data }) => setSettings(data));
   }, []);
 
   const visitDate = settings?.visit_date
