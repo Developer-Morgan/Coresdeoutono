@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { listAdmins, createAdmin, removeAdmin, resetAdminPassword } from "@/server/admins.functions";
+import { listAdmins, createAdmin, removeAdmin, resetAdminPassword } from "@/lib/admins.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

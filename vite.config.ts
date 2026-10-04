@@ -30,7 +30,7 @@ export default isVercelBuild
           // No SSR/server runtime in the SPA build — replace server-only
           // modules with shims that compile but don't ship secrets.
           {
-            find: /^@\/server\/admins\.functions$/,
+            find: /^@\/lib\/admins\.functions$/,
             replacement: r("src/spa/admins.functions.stub.ts"),
           },
           {
