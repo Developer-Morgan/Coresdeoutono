@@ -1,6 +1,9 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Wind, ClipboardList, Home, Shield } from "lucide-react";
+import { ClipboardList, Home, Shield } from "lucide-react";
 import type { ReactNode } from "react";
+import logoAsset from "@/assets/logo.png.asset.json";
+
+const LOGO_URL = logoAsset.url;
 
 const tabs = [
   { to: "/", label: "Início", icon: Home },
@@ -18,13 +21,19 @@ export function SiteLayout({ children }: { children: ReactNode }) {
         className="text-primary-foreground sticky top-0 z-30 shadow-[var(--shadow-soft)]"
         style={{ backgroundImage: "var(--gradient-header)", backgroundColor: "var(--primary)" }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-5 flex items-center gap-3 sm:gap-4">
-          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-md bg-accent/90 flex items-center justify-center shadow-[var(--shadow-soft)] shrink-0">
-            <Wind className="h-5 w-5 sm:h-6 sm:w-6 text-accent-foreground" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3 sm:gap-4">
+          {/* Logo em cartão branco para manter a marca legível sobre o cabeçalho escuro */}
+          <div className="shrink-0 rounded-lg bg-white px-2.5 sm:px-3.5 py-1.5 sm:py-2 shadow-[var(--shadow-soft)]">
+            <img
+              src={LOGO_URL}
+              alt="Residencial Cores de Outono"
+              className="h-7 sm:h-10 w-auto"
+            />
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-base sm:text-xl font-semibold tracking-tight leading-tight truncate">Residencial Cores de Outono</h1>
-            <p className="text-[10px] sm:text-xs text-primary-foreground/70 leading-tight">Programa de Manutenção de Exaustores</p>
+            <p className="text-[10px] sm:text-xs uppercase tracking-[0.18em] sm:tracking-[0.25em] text-primary-foreground/80 leading-tight">
+              Programa de Manutenção de Exaustores
+            </p>
           </div>
         </div>
         {/* Tabs — desktop / tablet */}
