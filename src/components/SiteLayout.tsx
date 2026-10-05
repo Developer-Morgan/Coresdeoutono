@@ -29,6 +29,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
               alt="Residencial Cores de Outono"
               className="h-9 sm:h-12 w-auto"
             />
+          </Link>
           <div className="flex-1 min-w-0">
             <p className="text-[10px] sm:text-xs uppercase tracking-[0.18em] sm:tracking-[0.25em] text-primary-foreground/80 leading-tight">
               Programa de Manutenção de Exaustores
